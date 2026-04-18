@@ -7,29 +7,34 @@ from django.contrib.postgres.fields import ArrayField
 
 class BuyerType(models.TextChoices):
     # Fill in your actual enum values
-    SCHOOL = "school"
-    HOSPITAL = "hospital"
-    RESTAURANT = "restaurant"
-    OTHER = "other"
+    RESTAURANT = "Restaurant"
+    SCHOOL = "School / District"
+    GROCERY = "Grocery / Co-op"
+    BANK = "Bank"
+    OTHER = "Other"
 
 class CropCategory(models.TextChoices):
-    VEGETABLE = "vegetable"
-    FRUIT = "fruit"
-    GRAIN = "grain"
-    HERB = "herb"
-    OTHER = "other"
+    VEGETABLES = "Vegetables"
+    FRUITS = "Fruits"
+    GRAINS = "Grains"
+    HERBS = "Herbs"
+    LEGUMES = "Legumes"
+    LIVESTOCK = "Livestock / Dairy"
 
 class QuantityUnit(models.TextChoices):
     LBS = "lbs"
     KG = "kg"
     CASES = "cases"
+    FLATS = "flats"
     UNITS = "units"
+    EACH = "each"
     BUSHELS = "bushels"
 
 class ListingStatus(models.TextChoices):
     ACTIVE = "Active"
-    INACTIVE = "Inactive"
+    EXPIRING = "Expiring"
     SOLD_OUT = "Sold Out"
+    PAUSED = "Paused"
 
 class RequestStatus(models.TextChoices):
     PENDING = "Pending"
