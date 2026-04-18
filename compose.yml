@@ -1,0 +1,10 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        UV_SYNC_DEV_OPTION: ""
+    ports:
+      - "8000:8000"
+    # volumes:
+      # - ./chile:/app
