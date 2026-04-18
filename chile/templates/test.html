@@ -1,24 +1,33 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Available Crops</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
   </head>
   <body>
-    <h1>Available Crops</h1>
+    <div class="page">
+      <header class="header">
+        <h1>Available Crops</h1>
+      </header>
 
-    {% if listings %}
-      <ul>
-        {% for listing in listings %}
-          <li>
-            <strong>{{ listing.crop_name }}</strong> —
-            {{ listing.quantity_available }} {{ listing.quantity_unit }}, available starting {{ listing.availability_start }}
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No matching listings.</p>
-    {% endif %}
+      {% if listings %}
+        <ul class="listing-list">
+          {% for listing in listings %}
+            <li class="listing-item">
+              <strong>{{ listing.crop_name }}</strong>
+              <span class="listing-meta">
+                <span class="qty">{{ listing.quantity_available }} {{ listing.quantity_unit }}</span>
+              </span>
+              <span class="listing-date">from {{ listing.availability_start }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty-state">No matching listings.</p>
+      {% endif %}
+    </div>
   </body>
 </html>
