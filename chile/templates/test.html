@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Available Crops</title>
+  </head>
+  <body>
+    <h1>Available Crops</h1>
+
+    {% if listings %}
+      <ul>
+        {% for listing in listings %}
+          <li>
+            <strong>{{ listing.crop_name }}</strong> —
+            {{ listing.quantity_available }} {{ listing.quantity_unit }}, available starting {{ listing.availability_start }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No matching listings.</p>
+    {% endif %}
+  </body>
+</html>
