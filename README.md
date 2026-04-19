@@ -1,6 +1,10 @@
-# TeamChile
+# Team Chile
 
-Desert Dev Hackathon
+[Desert Dev Hackathon](https://www.nmtechtalks.com/desert-dev-lab)
+
+## Food Connect
+
+...
 
 ## Development
 
