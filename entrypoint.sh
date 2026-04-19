@@ -1,11 +1,6 @@
 #!/usr/bin/env sh
 set -eu
 
-# dj()
-# {
-# 	python manage.py "$@" --settings="$DJANGO_SETTINGS_MODULE" ;
-# }
-
 cd /app/chile
 
 python manage.py check
