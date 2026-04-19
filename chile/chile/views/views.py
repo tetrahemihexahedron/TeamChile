@@ -4,10 +4,6 @@ from django.utils import timezone
 from chile.models import Listing
 
 
-def name_form(request):
-    return render(request, "name_form.html")
-
-
 def test(request):
     today = timezone.localdate()
     listings = (

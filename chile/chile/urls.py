@@ -21,7 +21,11 @@ from . import views
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path("list/", views.name_form, name="name_form"),
+    path(
+        "farms/<farm_id>/listings/new",
+        views.create_listing,
+        name="create_listing",
+    ),
     path("test/", views.test, name="test_page"),
     # Django site admin (managing users, etc.)
     path("admin/", admin.site.urls),
