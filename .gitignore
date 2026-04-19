@@ -1,5 +1,6 @@
 __pycache__/
 .venv/
 .python-version
-__init__.py
 .env
+
+.DS_Store
