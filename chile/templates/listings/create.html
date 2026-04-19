@@ -1,0 +1,51 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New listing for {{ farm.name }}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1>New listing</h1>
+        <p class="listing-meta">{{ farm.name }}</p>
+      </header>
+
+      <form method="post" class="listing-form form-card" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-errors" role="alert">
+            {% for err in form.non_field_errors %}
+              <p>{{ err }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% for field in form.visible_fields %}
+          <div class="field{% if field.errors %} field--invalid{% endif %}">
+            <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <p class="field-hint">{{ field.help_text }}</p>
+            {% endif %}
+            {% if field.errors %}
+              <ul class="field-errors">
+                {% for err in field.errors %}
+                  <li>{{ err }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create listing</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
