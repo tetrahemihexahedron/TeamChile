@@ -4,3 +4,6 @@ __pycache__/
 .env
 
 .DS_Store
+
+# App migrations are generated on first dev container start (entrypoint_dev.sh), not shipped.
+chile/chile/migrations/*

@@ -12,6 +12,8 @@ Copy `template.env` to `.env` and set environment variables there.
 
 To connect to the database on Supabase, use the host, database and user listed on Supabase for the 'Session pooler' connection method (which were written on the board earlier, along with the password).
 
+If you do this, you'll want to change the entrypoint in [compose.yml](compose.yml) from `entrypoint_dev.sh` to `entrypoint.sh`. The former runs migrations and loads the data from a fixture into a temporary test database, which we don't want to do while connecting to Supabse.
+
 Generally, instead of connecting to Supabase, you'll want to connect to a database running locally for development, so changes aren't persisted. To do that, you can use the same environment variables as for Supabase, except change `DB_HOST` to `db`, which is the name of the Docker service (defined in [compose.yml](compose.yml)) for the local database:
 
 ```
@@ -26,7 +28,7 @@ docker compose up
 
 This will start first a container running postgres and then a container running the Django app. When running them for the first time, a database will be created and populated with data.
 
-:exclamation: Note: If the Dockerfile, [entrypoint script](entrypoint.sh), or python dependencies have changed since you last ran the container, you may need to tell Docker to rebuild the image with the `--build` flag:
+:exclamation: Note: If the Dockerfile, entrypoint scripts, or python dependencies have changed since you last ran the container, you may need to tell Docker to rebuild the image with the `--build` flag:
 
 ```
 docker compose up --build
