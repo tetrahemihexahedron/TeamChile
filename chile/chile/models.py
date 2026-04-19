@@ -63,6 +63,7 @@ class Buyer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        managed = False
         db_table = "buyers"
 
     def __str__(self):
@@ -77,6 +78,7 @@ class Crop(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        managed = False
         db_table = "crops"
 
     def __str__(self):
@@ -110,6 +112,7 @@ class Farm(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        managed = False
         db_table = "farms"
 
     def __str__(self):
@@ -136,10 +139,12 @@ class Listing(models.Model):
     notes = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=ListingStatus.choices, default=ListingStatus.ACTIVE)
     scratch_cooking_ready = models.BooleanField(default=False)
+    source = models.CharField(max_length=50, default="self_service")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        managed = False
         db_table = "listings"
 
     def __str__(self):
@@ -167,6 +172,7 @@ class NMCounty(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        managed = False
         db_table = "nm_counties"
 
     def __str__(self):
@@ -192,6 +198,7 @@ class Request(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        managed = False
         db_table = "requests"
 
     def __str__(self):

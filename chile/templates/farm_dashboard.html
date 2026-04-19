@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Farm Dashboard — NM Food Connect{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links">
+  <a href="{% url 'farm_dashboard' %}">My Listings</a>
+  <a href="{% url 'create_listing' %}">Create Listing</a>
+  <a href="{% url 'farm_dashboard' %}">Requests</a>
+  <a href="{% url 'farm_dashboard' %}" class="active">Dashboard</a>
+</div>
+<a class="nav-account" href="{% url 'farm_dashboard' %}">Farm Account</a>
+{% endblock %}
+
+{% block content %}
+<div class="page page-wide">
+  <div class="dashboard-header">
+    <div>
+      <h1>Farm Dashboard</h1>
+      <p class="page-sub">{{ farm.name }} · {% if farm.asp_vendor_id %}ASP Vendor {{ farm.asp_vendor_id }} · {% endif %}{{ farm.county }} County</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'create_listing' %}">+ New Listing</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <strong class="stat-green">{{ active_count }}</strong>
+      <span>Active Listings</span>
+      {% if expiring_count %}<small>{{ expiring_count }} expiring soon</small>{% endif %}
+    </div>
+    <div class="stat-card">
+      <strong class="stat-green">{{ pending_count }}</strong>
+      <span>Pending Requests</span>
+      <small>Awaiting response</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-green">{{ fulfilled_count }}</strong>
+      <span>Fulfilled</span>
+    </div>
+    <div class="stat-card">
+      <strong>{{ match_rate }}%</strong>
+      <span>Match Rate</span>
+      <small>Listings → fulfilled</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-orange">${{ revenue_est|floatformat:0 }}</strong>
+      <span>Revenue (est.)</span>
+      <small>Based on fulfilled requests</small>
+    </div>
+  </div>
+
+  <div class="dashboard-cols">
+    <div class="dashboard-main">
+      <div class="section-header">
+        <h2>My Active Listings</h2>
+        <a class="btn btn-primary btn-sm" href="{% url 'create_listing' %}">+ New</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>CROP</th>
+            <th>QTY REMAINING</th>
+            <th>PRICE</th>
+            <th>AVAIL UNTIL</th>
+            <th>REQUESTS</th>
+            <th>STATUS</th>
+            <th>SOURCE</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for listing in listings %}
+          <tr>
+            <td><strong>{{ listing.crop_name }}</strong></td>
+            <td>{{ listing.quantity_available }} {{ listing.quantity_unit }}</td>
+            <td class="text-green">${{ listing.price_per_unit }}/{{ listing.quantity_unit }}</td>
+            <td>{{ listing.availability_end|date:"M j" }}</td>
+            <td>
+              {% if listing.pending_count %}
+              {{ listing.pending_count }} pending
+              {% else %}
+              <span class="text-muted">0</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="status-badge status-{{ listing.status|lower|slugify }}">{{ listing.status }}</span>
+            </td>
+            <td>
+              {% if listing.source == 'self_service' %}
+              <span class="source-badge source-self">Self Service</span>
+              {% elif listing.source == 'phone' %}
+              <span class="source-badge source-phone">📞 Phone</span>
+              {% elif listing.source == 'email' %}
+              <span class="source-badge source-email">✉️ Email</span>
+              {% elif listing.source == 'text' %}
+              <span class="source-badge source-text">💬 Text</span>
+              {% else %}
+              <span class="source-badge">{{ listing.source }}</span>
+              {% endif %}
+            </td>
+            <td><a href="#" class="btn-link">Edit</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="empty-state">No listings yet. <a href="{% url 'create_listing' %}">Create your first listing →</a></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="table-note">📞 Listings marked Phone, Email, or Text were created by NM Food Connect staff on behalf of the farmer.</p>
+    </div>
+
+    <aside class="dashboard-sidebar">
+      <h2>Incoming Requests <span class="badge">{{ pending_count }} pending</span></h2>
+      {% for req in pending_requests %}
+      <div class="request-card">
+        <div class="request-header">
+          <strong>{{ req.buyer.name }}</strong>
+          <span class="text-muted">{{ req.created_at|timesince }} ago</span>
+        </div>
+        <p class="request-detail">{{ req.listing.crop_name }} · {{ req.quantity_requested }} {{ req.listing.quantity_unit }} requested</p>
+        {% if req.message %}<p class="request-msg">"{{ req.message }}"</p>{% endif %}
+        <div class="request-actions">
+          <form method="post" action="{% url 'respond_request' req.id %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" name="action" value="decline" class="btn btn-sm btn-outline">Decline</button>
+          </form>
+          <form method="post" action="{% url 'respond_request' req.id %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" name="action" value="accept" class="btn btn-sm btn-primary">Accept ✓</button>
+          </form>
+          <a href="#" class="btn btn-sm btn-outline">Message →</a>
+        </div>
+      </div>
+      {% empty %}
+      <p class="empty-state">No pending requests.</p>
+      {% endfor %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

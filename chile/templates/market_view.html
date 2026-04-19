@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Browse Listings — NM Food Connect{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links">
+  <a href="{% url 'market_view' %}" class="active">Browse Listings</a>
+  <a href="{% url 'buyer_dashboard' %}">My Requests</a>
+  <a href="{% url 'buyer_dashboard' %}">Dashboard</a>
+</div>
+<a class="nav-account" href="{% url 'buyer_dashboard' %}">Buyer Account</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-layout">
+
+  <aside class="filters-sidebar">
+    <form method="get" id="filter-form">
+      <div class="filter-section">
+        <h4>CROP CATEGORY</h4>
+        <label class="filter-option {% if not selected_category %}active{% endif %}">
+          <input type="radio" name="category" value="" {% if not selected_category %}checked{% endif %} onchange="this.form.submit()"> All
+        </label>
+        {% for val, label in categories %}
+        <label class="filter-option {% if selected_category == val %}active{% endif %}">
+          <input type="radio" name="category" value="{{ val }}" {% if selected_category == val %}checked{% endif %} onchange="this.form.submit()"> {{ label }}
+        </label>
+        {% endfor %}
+      </div>
+
+      <div class="filter-section">
+        <h4>COUNTY</h4>
+        <label class="filter-option {% if not selected_county %}active{% endif %}">
+          <input type="radio" name="county" value="" {% if not selected_county %}checked{% endif %} onchange="this.form.submit()"> All counties
+        </label>
+        {% for c in counties %}
+        <label class="filter-option {% if selected_county == c %}active{% endif %}">
+          <input type="radio" name="county" value="{{ c }}" {% if selected_county == c %}checked{% endif %} onchange="this.form.submit()"> {{ c }}
+        </label>
+        {% endfor %}
+      </div>
+
+      <div class="filter-section">
+        <h4>VENDOR TYPE</h4>
+        <label class="filter-option {% if not selected_vendor_type %}active{% endif %}">
+          <input type="radio" name="vendor_type" value="" {% if not selected_vendor_type %}checked{% endif %} onchange="this.form.submit()"> All
+        </label>
+        <label class="filter-option {% if selected_vendor_type == 'Produce Plus' %}active{% endif %}">
+          <input type="radio" name="vendor_type" value="Produce Plus" {% if selected_vendor_type == 'Produce Plus' %}checked{% endif %} onchange="this.form.submit()"> Produce Plus
+        </label>
+        <label class="filter-option {% if selected_vendor_type == 'Meat Vendors' %}active{% endif %}">
+          <input type="radio" name="vendor_type" value="Meat Vendors" {% if selected_vendor_type == 'Meat Vendors' %}checked{% endif %} onchange="this.form.submit()"> Meat Vendors
+        </label>
+        <label class="filter-option {% if selected_vendor_type == 'Food Hubs' %}active{% endif %}">
+          <input type="radio" name="vendor_type" value="Food Hubs" {% if selected_vendor_type == 'Food Hubs' %}checked{% endif %} onchange="this.form.submit()"> Food Hubs
+        </label>
+        <label class="filter-option {% if selected_vendor_type == 'Distributors' %}active{% endif %}">
+          <input type="radio" name="vendor_type" value="Distributors" {% if selected_vendor_type == 'Distributors' %}checked{% endif %} onchange="this.form.submit()"> Distributors
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h4>PED ELIGIBLE</h4>
+        <label class="filter-option {% if not selected_ped %}active{% endif %}">
+          <input type="radio" name="ped" value="" {% if not selected_ped %}checked{% endif %} onchange="this.form.submit()"> Any
+        </label>
+        <label class="filter-option {% if selected_ped == 'grant_eligible' %}active{% endif %}">
+          <input type="radio" name="ped" value="grant_eligible" {% if selected_ped == 'grant_eligible' %}checked{% endif %} onchange="this.form.submit()"> Grant Eligible
+        </label>
+        <label class="filter-option {% if selected_ped == 'always_eligible' %}active{% endif %}">
+          <input type="radio" name="ped" value="always_eligible" {% if selected_ped == 'always_eligible' %}checked{% endif %} onchange="this.form.submit()"> Always Eligible
+        </label>
+      </div>
+
+      <input type="hidden" name="q" value="{{ search }}">
+      <input type="hidden" name="sort" value="{{ sort }}">
+    </form>
+  </aside>
+
+  <div class="listings-main">
+    <div class="listings-header">
+      <div class="search-row">
+        <form method="get" class="search-form">
+          <input type="text" name="q" value="{{ search }}" placeholder="Search crop, farm, county…" class="search-input">
+          <button type="submit" class="btn btn-primary">Search</button>
+          {% if selected_category %}<span class="tag active-tag">✕ {{ selected_category }} <a href="?q={{ search }}&county={{ selected_county }}&ped={{ selected_ped }}&sort={{ sort }}">×</a></span>{% endif %}
+          {% if selected_ped %}<span class="tag active-tag">✕ PED Eligible <a href="?q={{ search }}&category={{ selected_category }}&county={{ selected_county }}&sort={{ sort }}">×</a></span>{% endif %}
+          {% if selected_county %}<span class="tag active-tag">✕ {{ selected_county }} <a href="?q={{ search }}&category={{ selected_category }}&ped={{ selected_ped }}&sort={{ sort }}">×</a></span>{% endif %}
+          <input type="hidden" name="category" value="{{ selected_category }}">
+          <input type="hidden" name="county" value="{{ selected_county }}">
+          <input type="hidden" name="vendor_type" value="{{ selected_vendor_type }}">
+          <input type="hidden" name="ped" value="{{ selected_ped }}">
+          <input type="hidden" name="sort" value="{{ sort }}">
+        </form>
+      </div>
+
+      <div class="listings-meta">
+        <span>{{ listing_count }} active listing{{ listing_count|pluralize }}</span>
+        <form method="get" class="sort-form">
+          <input type="hidden" name="q" value="{{ search }}">
+          <input type="hidden" name="category" value="{{ selected_category }}">
+          <input type="hidden" name="county" value="{{ selected_county }}">
+          <input type="hidden" name="vendor_type" value="{{ selected_vendor_type }}">
+          <input type="hidden" name="ped" value="{{ selected_ped }}">
+          <select name="sort" onchange="this.form.submit()" class="sort-select">
+            <option value="ped_hours" {% if sort == 'ped_hours' %}selected{% endif %}>Sort: PED hours remaining</option>
+            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Sort: Price (low → high)</option>
+            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Sort: Price (high → low)</option>
+          </select>
+        </form>
+      </div>
+    </div>
+
+    {% if listings %}
+    <div class="listing-grid">
+      {% for listing in listings %}
+      <div class="listing-card {% if listing.status == 'Expiring' %}card-expiring{% endif %}">
+        <div class="card-top">
+          <div>
+            <h3 class="card-title">{{ listing.crop_name }}{% if listing.variety %} — {{ listing.variety }}{% endif %}</h3>
+            <p class="card-sub">{{ listing.farm.name }} · {{ listing.farm.county }}</p>
+          </div>
+          <span class="card-price">${{ listing.price_per_unit }}/{{ listing.quantity_unit }}</span>
+        </div>
+
+        <div class="card-meta">
+          <span>📦 {{ listing.quantity_available }} {{ listing.quantity_unit }}</span>
+          {% if listing.harvest_timestamp %}
+          <span>⏱ {{ listing.harvest_ago_hours|default:"?" }} hrs since harvest</span>
+          {% endif %}
+          {% if listing.ped_hours_remaining is not None %}
+            {% if listing.ped_window_expired %}
+            <span class="ped-expired">PED window closed</span>
+            {% else %}
+            <span class="ped-remaining">{{ listing.ped_hours_remaining|floatformat:0 }} hrs remaining</span>
+            {% endif %}
+          {% elif listing.ped_eligible_items %}
+          <span class="ped-always">Always eligible</span>
+          {% endif %}
+        </div>
+
+        <div class="card-tags">
+          {% if listing.certifications %}
+            {% for cert in listing.certifications %}<span class="tag">{{ cert }}</span>{% endfor %}
+          {% endif %}
+          {% if listing.ped_eligible or listing.ped_eligible_items %}<span class="tag tag-ped">Grant Eligible</span>{% endif %}
+        </div>
+
+        <a class="btn btn-primary btn-block" href="{% url 'request_submission' listing.id %}">Request →</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No listings match your filters.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

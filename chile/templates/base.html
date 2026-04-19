@@ -1,0 +1,34 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}NM Food Connect{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}" />
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="{% url 'landing' %}">🌱 NM Food Connect</a>
+
+  {% block nav_links %}
+  <div class="nav-links">
+    <a href="{% url 'market_view' %}">Browse Listings</a>
+    <a href="{% url 'data_page' %}">Impact Data</a>
+  </div>
+  <a class="nav-account" href="{% url 'buyer_dashboard' %}">Buyer Account</a>
+  {% endblock %}
+</nav>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>Data sourced from NM Grown ASP · NM PED · USDA 2023 · NM Legislative Council 2020 Census</p>
+  <p>"22 of 33 New Mexico counties have institutional buyers ready to purchase but zero local ASP-approved farms."</p>
+</footer>
+
+</body>
+</html>

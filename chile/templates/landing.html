@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}NM Food Connect — New Mexico's Local Food Marketplace{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links"></div>
+<div class="nav-actions"></div>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Connecting New Mexico Farms<br>to Schools, Preschools &amp; Senior Centers</h1>
+  <p class="hero-sub">{{ farm_count }} verified NM Grown ASP farms · {{ buyer_count }} institutional buyers · Real-time PED grant compliance</p>
+  <div class="hero-ctas">
+    <a class="btn btn-outline" href="{% url 'farm_dashboard' %}">🌾 I'm a Farm<span>List produce · Manage requests</span></a>
+    <a class="btn btn-primary" href="{% url 'market_view' %}">🏫 I'm a Buyer<span>Browse listings · Submit requests</span></a>
+  </div>
+  <div class="callout-banner">
+    <span>📞 Not comfortable with the form?</span>
+    Call or text NM Food Connect — our team will input your listing for you. No tech required.
+    <a class="btn btn-orange" href="tel:5056647693">📞 (505) NM-GROW</a>
+  </div>
+</section>
+
+<section class="stats-row">
+  <div class="stat-card">
+    <strong>{{ farm_count }}</strong>
+    <span>ASP-Verified Farms</span>
+    <small>All NM Grown approved</small>
+  </div>
+  <div class="stat-card">
+    <strong>{{ buyer_count }}</strong>
+    <span>Institutional Buyers</span>
+    <small>K-12, Preschools, Senior Centers</small>
+  </div>
+  <div class="stat-card">
+    <strong>{{ underserved_counties }}/{{ total_counties }}</strong>
+    <span>Counties Underserved</span>
+    <small>No local ASP farms vs. buyers</small>
+  </div>
+  <div class="stat-card">
+    <strong>75%</strong>
+    <span>NM Students</span>
+    <small>Qualify for free/reduced lunch</small>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <h2>How It Works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Farms register</h3>
+      <p>ASP-approved farms list available produce, meat &amp; more</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Buyers browse</h3>
+      <p>Schools &amp; senior centers filter by crop, county, PED eligibility</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Request submitted</h3>
+      <p>Buyer sends a purchase request with quantity &amp; delivery date</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Farm responds</h3>
+      <p>Farm accepts or declines — fulfilled requests tracked in dashboard</p>
+    </div>
+  </div>
+</section>
+
+<div class="landing-footer-quote">
+  "22 of 33 New Mexico counties have institutional buyers ready to purchase but zero local ASP-approved farms."
+  <cite>— NM Food Connect Supply Gap Analysis, April 2026</cite>
+</div>
+{% endblock %}
