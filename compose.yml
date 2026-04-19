@@ -16,7 +16,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    entrypoint: ["entrypoint_dev.sh"]
+    entrypoint: ["entrypoint.sh"]
 
   db:
     image: postgres:17

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Buyer Dashboard — NM Food Connect{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links">
+  <a href="{% url 'market_view' %}">Browse Listings</a>
+  <a href="{% url 'buyer_dashboard' %}">My Requests</a>
+  <a href="{% url 'buyer_dashboard' %}" class="active">Dashboard</a>
+</div>
+<a class="nav-account" href="{% url 'buyer_dashboard' %}">Buyer Account</a>
+{% endblock %}
+
+{% block content %}
+<div class="page page-wide">
+  <div class="dashboard-header">
+    <div>
+      <h1>Buyer Dashboard</h1>
+      <p class="page-sub">{{ buyer.name }} · {{ buyer.get_type_display }} · {{ buyer.county }} County{% if buyer.ped_grant_participant %} · PED Grant Participant{% endif %}</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'market_view' %}">Browse Listings →</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <strong class="stat-green">{{ active_count }}</strong>
+      <span>Active Requests</span>
+      <small>Across farms</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-green">{{ accepted_count }}</strong>
+      <span>Accepted</span>
+      <small>Ready to fulfill</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-green">{{ fulfilled_count }}</strong>
+      <span>Fulfilled</span>
+      <small>This semester</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-orange">${{ spent_est|floatformat:0 }}</strong>
+      <span>Spent (est.)</span>
+      <small>Grant-funded purchases</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-blue">{{ ped_pct }}%</strong>
+      <span>PED Eligible</span>
+      <small>Of our purchases are grant-eligible</small>
+    </div>
+  </div>
+
+  <div class="dashboard-cols">
+    <div class="dashboard-main">
+      <div class="section-header">
+        <h2>My Purchase Requests</h2>
+        <a class="btn btn-primary btn-sm" href="{% url 'market_view' %}">Browse More</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>LISTING</th>
+            <th>FARM</th>
+            <th>QTY</th>
+            <th>DELIVERY</th>
+            <th>PED</th>
+            <th>STATUS</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in requests %}
+          <tr>
+            <td><strong>{{ req.listing.crop_name }}</strong></td>
+            <td>{{ req.listing.farm.name }}</td>
+            <td>{{ req.quantity_requested }} {{ req.listing.quantity_unit }}</td>
+            <td>
+              {% if req.requested_delivery %}
+              {{ req.requested_delivery|date:"M j · g:i A" }}
+              {% else %}
+              <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if req.listing.ped_eligible or req.listing.ped_eligible_items %}
+              <span class="ped-yes">✓ Yes</span>
+              {% else %}
+              <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="status-badge status-{{ req.status|lower|slugify }}">{{ req.status }}</span>
+            </td>
+            <td><a href="{% url 'request_submission' req.listing.id %}" class="btn-link">View →</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="empty-state">No requests yet. <a href="{% url 'market_view' %}">Browse listings →</a></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <aside class="dashboard-sidebar">
+      <div class="ped-summary-card">
+        <h2>PED Grant Summary</h2>
+        <div class="grant-status {% if buyer.ped_grant_participant %}grant-active{% endif %}">
+          {% if buyer.ped_grant_participant %}
+          <strong>Active Participant</strong>
+          <span>NM PED Farm to School Program</span>
+          {% else %}
+          <strong>Not enrolled</strong>
+          {% endif %}
+        </div>
+
+        <div class="summary-rows">
+          <span class="summary-label">THIS SEMESTER</span>
+          <div class="summary-row"><span>Total purchases</span><span class="text-orange">${{ spent_est|floatformat:0 }} est.</span></div>
+          <div class="summary-row"><span>PED grant-eligible</span><span>{{ ped_pct }}%</span></div>
+        </div>
+      </div>
+
+      {% if recommended %}
+      <div class="recommended-section">
+        <h3>RECOMMENDED LISTINGS</h3>
+        {% for listing in recommended %}
+        <a class="recommended-card" href="{% url 'request_submission' listing.id %}">
+          <strong>{{ listing.crop_name }}</strong>
+          <span>{{ listing.farm.name }}</span>
+          {% if listing.ped_hours_remaining is not None %}
+          <span class="ped-remaining">{{ listing.ped_hours_remaining|floatformat:0 }} hrs PED remaining</span>
+          {% elif listing.ped_eligible_items %}
+          <span class="ped-always">Always eligible</span>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,89 +1,110 @@
-# Team Chile
+# NM Food Connect — TeamChile
+**Desert Dev Lab 2026 · NM Tech Talks · April 18-19, 2026**
 
-[Desert Dev Hackathon](https://www.nmtechtalks.com/desert-dev-lab)
+A two-sided marketplace connecting New Mexico's USDA-verified
+Approved Supplier Program (ASP) farms to institutional buyers
+— K-12 schools, preschools, and senior centers — with
+built-in PED Farm to School grant compliance.
 
-## Food Connect
+---
 
-...
+## The Problem
+22 of 33 New Mexico counties have institutional buyers ready
+to purchase local food but face barriers connecting to
+ASP-approved local farms. NM Food Connect closes that gap.
 
-## Development
+**Verified data:**
+- 131 ASP-verified NM farms · 150 institutional buyers
+- 7 counties have buyers but zero local ASP farms
+- 23.3% NM child food insecurity — 4th highest nationally
+- 75% of NM students qualify for free/reduced lunch
+- PED Farm to School grant requires 36-hr fresh delivery window
 
-Copy `template.env` to `.env` and set environment variables there.
+---
 
-To connect to the database on Supabase, use the host, database and user listed on Supabase for the 'Session pooler' connection method (which were written on the board earlier, along with the password).
+## Tech Stack
+- **Backend:** Django 6.0.4
+- **Database:** Supabase (Postgres 17) — hosted, no local DB needed
+- **Package manager:** uv
+- **Python:** 3.14.3
 
-If you do this, you'll want to change the entrypoint in [compose.yml](compose.yml) from `entrypoint_dev.sh` to `entrypoint.sh`. The former runs migrations and loads the data from a fixture into a temporary test database, which we don't want to do while connecting to Supabse.
+---
 
-Generally, instead of connecting to Supabase, you'll want to connect to a database running locally for development, so changes aren't persisted. To do that, you can use the same environment variables as for Supabase, except change `DB_HOST` to `db`, which is the name of the Docker service (defined in [compose.yml](compose.yml)) for the local database:
+## Quick Start
 
-```
-DB_HOST=db
-```
+### 1. Clone the repo
+git clone https://github.com/tetrahemihexahedron/TeamChile.git
+cd TeamChile
 
-Run the Docker containers with
+### 2. Create your .env file
+Copy template.env to .env and fill in the Supabase credentials:
 
-```
-docker compose up
-```
+cp template.env .env
 
-This will start first a container running postgres and then a container running the Django app. When running them for the first time, a database will be created and populated with data.
+Then edit .env:
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD=<get from team>
+DB_HOST=<get from team>
 
-:exclamation: Note: If the Dockerfile, entrypoint scripts, or python dependencies have changed since you last ran the container, you may need to tell Docker to rebuild the image with the `--build` flag:
+⚠️ Never commit .env — it is gitignored.
 
-```
-docker compose up --build
-```
+### 3. Install dependencies
+uv sync
 
-Then visit http://localhost:8000.
+### 4. Start the server
+uv run python chile/manage.py runserver
 
-To bring the container down when you're done:
+### 5. Open in browser
+http://localhost:8000
 
-```
-docker compose down
-```
+---
 
-This will preserve the database and any changes that you may have made to it, so that the next time you run `docker compose up`, the state of the app should be the same.
+## ⚠️ Important — Do NOT run migrations
+The database schema already exists in Supabase.
+Never run:
+  python manage.py migrate
+  python manage.py makemigrations
 
-If instead you want to delete the database, so that you can reset it to its initial state, use the `-v` flag:
+---
 
-```
-docker compose down -v
-```
+## Screens & URLs
 
-Then the next time you run `docker compose up`, you should get a fresh copy of the database.
+| Screen | URL |
+|---|---|
+| Home / Landing | http://localhost:8000 |
+| Market View | http://localhost:8000/listings/ |
+| Request Submission | http://localhost:8000/listings/<id>/request/ |
+| Create Listing | http://localhost:8000/listings/create/ |
+| Farm Dashboard | http://localhost:8000/farm/dashboard/ |
+| Buyer Dashboard | http://localhost:8000/buyer/dashboard/ |
+| Impact / Data | http://localhost:8000/data/ |
+| Django Admin | http://localhost:8000/admin/ |
 
-Some other docker commands that may be helpful:
+---
 
-- To see containers on your computer:
+## White Glove Intake
+Farmers can call or text (505) NM-GROW and NM Food Connect
+staff will create listings on their behalf via Django admin.
+Listings are tagged with source: phone_assisted,
+email_manifest, text_manifest, or self_service.
 
-  ```
-  docker ps -a
-  ```
+---
 
-- To delete a container:
+## Figma Mockups
+All 7 screen designs are in:
+DDL2026 — NM Food Connect Mock-Ups/
 
-  ```
-  docker rm <container_id_or_name>
-  ```
+---
 
-- To see images on your computer:
+## Data Sources
+- NM Grown Approved Supplier Program FY2026
+- NM Public Education Department Farm to School FAQ
+- USDA 2023 Food Security Report
+- NM Legislative Council 2020 Census
+- NM Voices for Children
 
-  ```
-  docker image list
-  ```
+---
 
-- To delete an image:
-
-  ```
-  docker image rm <image_id_or_name>
-  ```
-
-- To clean up some of the artifacts that Docker leaves behind:
-
-  ```
-  docker system prune
-  ```
-
-### Viewing the local database
-
-If you wish, you can connect a database viewer, like [DBeaver](https://dbeaver.io), to port 5432 on localhost to inspect changes to the database running in the postgres container.
+## Team
+TeamChile · Desert Dev Lab 2026

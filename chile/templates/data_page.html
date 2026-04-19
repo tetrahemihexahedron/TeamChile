@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Impact &amp; Data — NM Food Connect{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links">
+  <a href="{% url 'market_view' %}">Browse Listings</a>
+  <a href="{% url 'buyer_dashboard' %}">My Requests</a>
+  <a href="{% url 'data_page' %}" class="active">Impact Data</a>
+  <a href="{% url 'buyer_dashboard' %}">Dashboard</a>
+</div>
+<a class="nav-account" href="{% url 'buyer_dashboard' %}">Buyer Account</a>
+{% endblock %}
+
+{% block content %}
+<div class="page page-wide">
+  <h1>NM Food Connect — Impact &amp; Data</h1>
+  <p class="page-sub">Sources: NM Grown ASP FY2026 · USDA 2023 · NM Legislative Council 2020 Census · NM Voices for Children · NM PED</p>
+
+  <div class="stats-row stats-row-8">
+    <div class="stat-card">
+      <strong class="stat-green">{{ farm_count }}</strong>
+      <span>ASP-Verified NM Farms</span>
+      <small>NM Grown Approved Supplier Program FY2026</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-blue">{{ buyer_count }}</strong>
+      <span>Institutional Buyers</span>
+      <small>K-12 schools, preschools &amp; senior centers</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-red">{{ underserved_count }}/{{ total_counties }}</strong>
+      <span>Counties Underserved</span>
+      <small>Buyers present, zero local ASP farms</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-orange">75%</strong>
+      <span>NM Students Free/Reduced Lunch</span>
+      <small>NM Voices for Children · NM PED</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-red">23.3%</strong>
+      <span>NM Child Food Insecurity</span>
+      <small>USDA 2023 — 1 in 4 NM children face hunger</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-orange">4th</strong>
+      <span>Highest Child Hunger in the US</span>
+      <small>Behind only Arkansas, Oklahoma, and Louisiana</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-green">36 hr</strong>
+      <span>PED Fresh Delivery Window</span>
+      <small>Produce delivered within 36 hrs of harvest — PED grant rule</small>
+    </div>
+    <div class="stat-card">
+      <strong class="stat-green">100%</strong>
+      <span>Farms are ASP-Verified</span>
+      <small>All {{ farm_count }} farms confirmed on NM Grown approved supplier list</small>
+    </div>
+  </div>
+
+  <div class="dashboard-cols">
+    <div class="dashboard-main">
+      <h2>County Supply Gap — Ranked by Need</h2>
+      <p class="page-sub">Counties with highest food insecurity relative to local farm supply</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>COUNTY</th>
+            <th>REGION</th>
+            <th>FOOD INSEC.</th>
+            <th>CHILD HUNGER</th>
+            <th>ASP FARMS</th>
+            <th>BUYERS</th>
+            <th>COVERAGE STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for county in counties %}
+          <tr class="{% if county.asp_farms == 0 and county.buyers > 0 %}row-critical{% endif %}">
+            <td><strong>{{ county.county_name }}</strong></td>
+            <td class="text-muted">{{ county.region }}</td>
+            <td class="{% if county.food_insecurity_rate_pct >= 20 %}text-red{% elif county.food_insecurity_rate_pct >= 15 %}text-orange{% endif %}">
+              {% if county.food_insecurity_rate_pct %}{{ county.food_insecurity_rate_pct }}%{% else %}—{% endif %}
+            </td>
+            <td class="{% if county.child_food_insecurity_rate_pct >= 30 %}text-red{% endif %}">
+              {% if county.child_food_insecurity_rate_pct %}{{ county.child_food_insecurity_rate_pct }}%{% else %}—{% endif %}
+            </td>
+            <td class="{% if county.asp_farms == 0 %}text-red{% else %}text-green{% endif %}">
+              <strong>{{ county.asp_farms }}</strong>
+            </td>
+            <td>{{ county.buyers }}</td>
+            <td>
+              <span class="coverage-badge coverage-{{ county.coverage_status|lower|slugify }}">
+                {{ county.coverage_status }}
+              </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="empty-state">No county data available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="table-note">Source: NM Grown ASP FY2026 · USDA 2023 estimates</p>
+    </div>
+
+    <aside class="dashboard-sidebar">
+      {% if no_farm_counties %}
+      <div class="alert-box alert-red">
+        <h3>⚠ Counties with No Local Farms</h3>
+        <p>These counties have active institutional buyers but ZERO ASP-approved local farms.</p>
+        <p class="text-green"><strong>NM Food Connect closes this gap.</strong></p>
+        {% for county in no_farm_counties %}
+        <div class="no-farm-card">
+          <strong>{{ county.county_name }} County</strong>
+          <span>{{ county.buyers }} buyer{{ county.buyers|pluralize }} · 0 farms</span>
+          {% if county.food_insecurity_rate_pct %}<span class="text-red">{{ county.food_insecurity_rate_pct }}% food insecure</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+
+  <div class="landing-footer-quote">
+    "22 of 33 New Mexico counties have institutional buyers ready to purchase but zero local ASP-approved farms."
+    <cite>— NM Food Connect Analysis · April 2026</cite>
+  </div>
+</div>
+{% endblock %}

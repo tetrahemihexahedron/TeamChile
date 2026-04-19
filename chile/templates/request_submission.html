@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Submit a Purchase Request — NM Food Connect{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links">
+  <a href="{% url 'market_view' %}">Browse Listings</a>
+  <a href="{% url 'buyer_dashboard' %}">My Requests</a>
+  <a href="{% url 'buyer_dashboard' %}">Dashboard</a>
+</div>
+<a class="nav-account" href="{% url 'buyer_dashboard' %}">Buyer Account</a>
+{% endblock %}
+
+{% block content %}
+<div class="page page-wide">
+  <h1>Submit a Purchase Request</h1>
+  <p class="page-sub">{{ listing.crop_name }} · {{ listing.farm.name }} · {{ listing.farm.county }} County</p>
+
+  <div class="listing-summary-banner {% if ped_hours_remaining is not None and not ped_window_expired %}banner-ped{% endif %}">
+    <strong>{{ listing.crop_name }}{% if listing.variety %} — {{ listing.variety }}{% endif %}</strong>
+    <span>{{ listing.farm.name }} · {{ listing.farm.county }} County{% if listing.farm.asp_vendor_id %} · ASP Vendor {{ listing.farm.asp_vendor_id }}{% endif %}</span>
+    <span>{{ listing.quantity_available }} {{ listing.quantity_unit }} available · ${{ listing.price_per_unit }}/{{ listing.quantity_unit }}
+      {% if harvest_ago_hours is not None %} · Harvested {{ harvest_ago_hours|floatformat:0 }} hrs ago{% endif %}
+    </span>
+    {% if ped_hours_remaining is not None and not ped_window_expired %}
+    <span class="ped-badge">✓ PED Grant Eligible — {{ ped_hours_remaining|floatformat:0 }} hrs remaining</span>
+    {% elif listing.ped_eligible_items %}
+    <span class="ped-badge">✓ Always PED Eligible</span>
+    {% endif %}
+  </div>
+
+  <div class="two-col">
+    <div class="form-col">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label>YOUR INSTITUTION</label>
+          <div class="institution-row">
+            <input type="text" class="form-input" value="{{ buyer.name }}" readonly>
+            <a href="#" class="btn-link">Switch institution</a>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>QUANTITY REQUESTED *</label>
+          <div class="qty-row">
+            <input type="number" name="quantity_requested" class="form-input {% if errors.quantity %}input-error{% endif %}"
+              value="{{ post.quantity_requested|default:'' }}" min="{{ listing.min_order_qty|default:1 }}" max="{{ remaining_qty }}" step="0.01">
+            <span class="unit-label">{{ listing.quantity_unit }}</span>
+            <span class="price-estimate" id="price-est"></span>
+          </div>
+          {% if listing.min_order_qty %}<small>Min order: {{ listing.min_order_qty }} {{ listing.quantity_unit }} · Max available: {{ remaining_qty }} {{ listing.quantity_unit }}</small>{% endif %}
+          {% if errors.quantity %}<p class="field-error">{{ errors.quantity }}</p>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>REQUESTED DELIVERY DATE &amp; TIME *</label>
+          {% if ped_hours_remaining is not None and not ped_window_expired %}
+          <p class="ped-hint">PED 36-hr rule: must be delivered within 36 hours of harvest.
+            {% if harvest_ago_hours is not None %}Farm harvested {{ harvest_ago_hours|floatformat:0 }} hrs ago — {{ ped_hours_remaining|floatformat:0 }} hrs remaining.{% endif %}
+          </p>
+          {% endif %}
+          <div class="date-time-row">
+            <input type="date" name="delivery_date" class="form-input {% if errors.delivery_date %}input-error{% endif %}"
+              value="{{ post.delivery_date|default:'' }}">
+            <input type="time" name="delivery_time" class="form-input" value="{{ post.delivery_time|default:'10:00' }}">
+          </div>
+          {% if errors.delivery_date %}<p class="field-error">{{ errors.delivery_date }}</p>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>DELIVERY LOCATION</label>
+          <input type="text" name="delivery_location" class="form-input"
+            value="{{ post.delivery_location|default:'' }}" placeholder="Street address, city, state, ZIP">
+        </div>
+
+        <div class="form-group">
+          <label>MESSAGE TO FARM (optional)</label>
+          <textarea name="message" class="form-input form-textarea" rows="4"
+            placeholder="Delivery notes, special requirements…">{{ post.message|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="ped_confirm" value="1" {% if post.ped_confirm %}checked{% endif %}>
+            I confirm this purchase will be made under PED Farm to School grant funding (NM Grown ASP required)
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'market_view' %}" class="btn btn-outline">Cancel</a>
+          <button type="submit" class="btn btn-primary">Submit Request →</button>
+        </div>
+      </form>
+    </div>
+
+    <aside class="detail-sidebar">
+      <h3>Farm Details</h3>
+      <div class="detail-section">
+        <span class="detail-label">FARM</span>
+        <strong>{{ listing.farm.name }}</strong>
+        {% if listing.farm.owner_name %}<span>{{ listing.farm.owner_name }} · Owner</span>{% endif %}
+        {% if listing.farm.phone %}<span>📞 {{ listing.farm.phone }}</span>{% endif %}
+        {% if listing.farm.county %}<span>📍 {{ listing.farm.county }} County{% if listing.farm.zip %} · ZIP {{ listing.farm.zip }}{% endif %}</span>{% endif %}
+        {% if listing.farm.asp_vendor_id %}<span>ASP Vendor ID: {{ listing.farm.asp_vendor_id }}</span>{% endif %}
+      </div>
+
+      <div class="detail-section">
+        <span class="detail-label">LISTING</span>
+        <div class="detail-row"><span>Crop</span><span>{{ listing.crop_name }}{% if listing.variety %} — {{ listing.variety }}{% endif %}</span></div>
+        <div class="detail-row"><span>Quantity available</span><span>{{ listing.quantity_available }} {{ listing.quantity_unit }}</span></div>
+        <div class="detail-row"><span>Price</span><span>${{ listing.price_per_unit }} per {{ listing.quantity_unit }}</span></div>
+        {% if listing.certifications %}
+        <div class="detail-row"><span>Certifications</span><span>{{ listing.certifications|join:", " }}</span></div>
+        {% endif %}
+        {% if harvest_ago_hours is not None %}
+        <div class="detail-row"><span>Harvested</span><span>{{ harvest_ago_hours|floatformat:0 }} hours ago</span></div>
+        {% endif %}
+        <div class="detail-row"><span>Available until</span><span>{{ listing.availability_end }}</span></div>
+        <div class="detail-row"><span>Scratch cooking ready</span>
+          <span {% if listing.scratch_cooking_ready %}class="text-green"{% endif %}>
+            {% if listing.scratch_cooking_ready %}Yes ✓{% else %}No{% endif %}
+          </span>
+        </div>
+        <div class="detail-row"><span>PED eligible</span>
+          <span {% if ped_hours_remaining is not None and not ped_window_expired or listing.ped_eligible_items %}class="text-green"{% endif %}>
+            {% if listing.ped_eligible_items %}Always eligible
+            {% elif ped_hours_remaining is not None and not ped_window_expired %}Yes — {{ ped_hours_remaining|floatformat:0 }} hrs remaining
+            {% else %}No{% endif %}
+          </span>
+        </div>
+        {% if listing.min_order_qty %}
+        <div class="detail-row"><span>Min. order</span><span>{{ listing.min_order_qty }} {{ listing.quantity_unit }}</span></div>
+        {% endif %}
+      </div>
+
+      {% if pending_requests %}
+      <div class="detail-section">
+        <span class="detail-label">PENDING REQUESTS FOR THIS LISTING</span>
+        {% for r in pending_requests %}
+        <div class="pending-req-row">{{ r.buyer.name }} — {{ r.quantity_requested }} {{ listing.quantity_unit }} ·
+          <span class="status-{{ r.status|lower }}">{{ r.status }}</span>
+        </div>
+        {% endfor %}
+        <p class="text-green">{{ remaining_qty }} {{ listing.quantity_unit }} remaining after your request</p>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+
+<script>
+  const pricePerUnit = {{ listing.price_per_unit }};
+  const qtyInput = document.querySelector('input[name="quantity_requested"]');
+  const est = document.getElementById('price-est');
+  if (qtyInput && est) {
+    function updateEst() {
+      const qty = parseFloat(qtyInput.value);
+      if (!isNaN(qty) && qty > 0) {
+        est.textContent = 'Estimated total: $' + (qty * pricePerUnit).toFixed(2);
+      } else {
+        est.textContent = '';
+      }
+    }
+    qtyInput.addEventListener('input', updateEst);
+    updateEst();
+  }
+</script>
+{% endblock %}

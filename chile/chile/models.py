@@ -136,6 +136,7 @@ class Listing(models.Model):
     notes = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=ListingStatus.choices, default=ListingStatus.ACTIVE)
     scratch_cooking_ready = models.BooleanField(default=False)
+    source = models.CharField(max_length=50, default="self_service")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

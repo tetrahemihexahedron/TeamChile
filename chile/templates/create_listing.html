@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Create a New Listing — NM Food Connect{% endblock %}
+
+{% block nav_links %}
+<div class="nav-links">
+  <a href="{% url 'farm_dashboard' %}">My Listings</a>
+  <a href="{% url 'create_listing' %}" class="active">Create Listing</a>
+  <a href="{% url 'farm_dashboard' %}">Requests</a>
+  <a href="{% url 'farm_dashboard' %}">Dashboard</a>
+</div>
+<a class="nav-account" href="{% url 'farm_dashboard' %}">Farm Account</a>
+{% endblock %}
+
+{% block content %}
+<div class="page page-wide">
+  <h1>Create a New Listing</h1>
+  <p class="page-sub">Your listing will be visible to verified NM institutional buyers</p>
+
+  <div class="callout-banner">
+    📞 Need help creating this listing?
+    Call or text (505) NM-GROW — our team will build this listing from your harvest manifest. Or continue below ↓
+    <a class="btn btn-orange" href="tel:5056647693">Call us →</a>
+  </div>
+
+  <div class="two-col">
+    <div class="form-col">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Crop Name *</label>
+            <input type="text" name="crop_name" class="form-input {% if errors.crop_name %}input-error{% endif %}"
+              value="{{ post.crop_name|default:'' }}" placeholder="e.g. Hatch Green Chile">
+            {% if errors.crop_name %}<p class="field-error">{{ errors.crop_name }}</p>{% endif %}
+          </div>
+          <div class="form-group">
+            <label>Variety (optional)</label>
+            <input type="text" name="variety" class="form-input"
+              value="{{ post.variety|default:'' }}" placeholder="e.g. Big Jim, NuMex Heritage">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>CROP CATEGORY *</label>
+          <div class="toggle-group">
+            {% for val, label in categories %}
+            <label class="toggle-btn {% if post.category == val %}active{% endif %}">
+              <input type="radio" name="category" value="{{ val }}" {% if post.category == val %}checked{% endif %}> {{ label }}
+            </label>
+            {% endfor %}
+          </div>
+          {% if errors.category %}<p class="field-error">{{ errors.category }}</p>{% endif %}
+        </div>
+
+        <fieldset class="form-fieldset">
+          <legend>QUANTITY &amp; PRICING</legend>
+          <div class="form-row-4">
+            <div class="form-group">
+              <label>Quantity Available *</label>
+              <input type="number" name="quantity_available" class="form-input {% if errors.quantity_available %}input-error{% endif %}"
+                value="{{ post.quantity_available|default:'' }}" placeholder="e.g. 500" step="0.01" min="0">
+              {% if errors.quantity_available %}<p class="field-error">{{ errors.quantity_available }}</p>{% endif %}
+            </div>
+            <div class="form-group">
+              <label>UNIT *</label>
+              <select name="quantity_unit" class="form-input">
+                {% for val, label in units %}
+                <option value="{{ val }}" {% if post.quantity_unit == val %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Price per Unit *</label>
+              <input type="number" name="price_per_unit" class="form-input {% if errors.price_per_unit %}input-error{% endif %}"
+                value="{{ post.price_per_unit|default:'' }}" placeholder="e.g. 1.20" step="0.01" min="0">
+              {% if errors.price_per_unit %}<p class="field-error">{{ errors.price_per_unit }}</p>{% endif %}
+            </div>
+            <div class="form-group">
+              <label>Min. Order Qty</label>
+              <input type="number" name="min_order_qty" class="form-input {% if errors.min_order_qty %}input-error{% endif %}"
+                value="{{ post.min_order_qty|default:'' }}" placeholder="e.g. 50 lbs" step="0.01" min="0">
+              {% if errors.min_order_qty %}<p class="field-error">{{ errors.min_order_qty }}</p>{% endif %}
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-fieldset">
+          <legend>HARVEST &amp; AVAILABILITY</legend>
+          <div class="ped-info-banner">
+            ⏱ Harvest Timestamp — required for PED 36-hr compliance. Enter exact harvest date and time.
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Harvest Date *</label>
+              <input type="date" name="harvest_date" class="form-input {% if errors.harvest_date %}input-error{% endif %}"
+                value="{{ post.harvest_date|default:'' }}">
+              {% if errors.harvest_date %}<p class="field-error">{{ errors.harvest_date }}</p>{% endif %}
+            </div>
+            <div class="form-group">
+              <label>Harvest Time *</label>
+              <input type="time" name="harvest_time" class="form-input {% if errors.harvest_time %}input-error{% endif %}"
+                value="{{ post.harvest_time|default:'' }}">
+              {% if errors.harvest_time %}<p class="field-error">{{ errors.harvest_time }}</p>{% endif %}
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Available From *</label>
+              <input type="date" name="availability_start" class="form-input {% if errors.availability_start %}input-error{% endif %}"
+                value="{{ post.availability_start|default:'' }}">
+              {% if errors.availability_start %}<p class="field-error">{{ errors.availability_start }}</p>{% endif %}
+            </div>
+            <div class="form-group">
+              <label>Available Until *</label>
+              <input type="date" name="availability_end" class="form-input {% if errors.availability_end %}input-error{% endif %}"
+                value="{{ post.availability_end|default:'' }}">
+              {% if errors.availability_end %}<p class="field-error">{{ errors.availability_end }}</p>{% endif %}
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-group">
+          <label>CERTIFICATIONS</label>
+          <div class="toggle-group">
+            {% for cert in certifications %}
+            <label class="toggle-btn {% if cert in post.certifications|default:'' %}active{% endif %}">
+              <input type="checkbox" name="certifications" value="{{ cert }}"
+                {% if post and cert in post.getlist.certifications %}checked{% endif %}> {{ cert }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="ped_eligible_items" value="1" {% if post.ped_eligible_items %}checked{% endif %}>
+            This product is a dried bean or processed chile (always PED grant eligible regardless of harvest time)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>ADDITIONAL NOTES (optional)</label>
+          <textarea name="notes" class="form-input form-textarea" rows="4"
+            placeholder="Describe growing practices, delivery options, packaging, or any buyer information…">{{ post.notes|default:'' }}</textarea>
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'farm_dashboard' %}" class="btn btn-outline">Cancel</a>
+          <button type="submit" name="action" value="preview" class="btn btn-outline">Preview</button>
+          <button type="submit" name="action" value="publish" class="btn btn-primary">Publish Listing →</button>
+        </div>
+      </form>
+    </div>
+
+    <aside class="preview-sidebar">
+      {% if preview %}
+      <div class="preview-card-wrapper">
+        <h3>Listing Preview</h3>
+        <p class="preview-sub">How buyers will see this</p>
+        <div class="listing-card">
+          <div class="card-top">
+            <div>
+              <h3 class="card-title">{{ preview.crop_name }}{% if preview.variety %} — {{ preview.variety }}{% endif %}</h3>
+              <p class="card-sub">{% if preview.farm %}{{ preview.farm.name }} · {{ preview.farm.county }} County{% endif %}</p>
+            </div>
+            {% if preview.price %}<span class="card-price">${{ preview.price }}/{{ post.quantity_unit }}</span>{% endif %}
+          </div>
+          <div class="card-meta">
+            {% if preview.qty %}<span>📦 {{ preview.qty }} {{ post.quantity_unit }} available</span>{% endif %}
+            {% if preview.harvest_ts %}
+            <span>⏱ Harvested {{ preview.harvest_ts|date:"g:i A" }}
+              {% if preview.ped_hours_remaining is not None %}· {{ preview.ped_hours_remaining|floatformat:0 }} hrs PED window{% endif %}
+            </span>
+            {% endif %}
+          </div>
+          <div class="card-tags">
+            {% if preview.certifications %}{% for cert in preview.certifications %}<span class="tag">{{ cert }}</span>{% endfor %}{% endif %}
+            {% if preview.always_eligible or preview.ped_hours_remaining is not None %}<span class="tag tag-ped">✓ Grant Eligible</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="preview-placeholder">
+        <h3>Listing Preview</h3>
+        <p>How buyers will see this</p>
+        <div class="preview-empty">Fill in the form to see a preview</div>
+      </div>
+      {% endif %}
+
+      <div class="tips-box">
+        <h4>💡 Tips for a strong listing</h4>
+        <ul>
+          <li>Set harvest timestamp exactly — drives PED 36-hr compliance</li>
+          <li>Be specific about variety (Big Jim vs. NuMex Heritage)</li>
+          <li>Check always eligible for dried beans or processed chile</li>
+          <li>Set a min. order qty to reduce low-value inquiries</li>
+          <li>Note delivery options — pickup vs. delivery matters to schools</li>
+          <li>Update quantity when stock changes during season</li>
+          <li>GAP certification increases trust with institutional buyers</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
