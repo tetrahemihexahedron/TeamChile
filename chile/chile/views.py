@@ -1,7 +1,11 @@
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.db import connection
 from django.http import Http404
+
+_PRICE_CENTS = Decimal("0.01")
 
 from .models import (
     Farm, Buyer, Listing, Request, NMCounty,
@@ -252,8 +256,8 @@ def create_listing(request):
             errors["quantity_available"] = "Enter a valid quantity."
 
         try:
-            price = float(price_str)
-        except ValueError:
+            price = Decimal(price_str).quantize(_PRICE_CENTS, rounding=ROUND_HALF_UP)
+        except (InvalidOperation, ValueError):
             price = None
             errors["price_per_unit"] = "Enter a valid price."
 

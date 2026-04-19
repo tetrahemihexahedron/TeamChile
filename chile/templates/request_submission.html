@@ -18,7 +18,7 @@
   <div class="listing-summary-banner {% if ped_hours_remaining is not None and not ped_window_expired %}banner-ped{% endif %}">
     <strong>{{ listing.crop_name }}{% if listing.variety %} — {{ listing.variety }}{% endif %}</strong>
     <span>{{ listing.farm.name }} · {{ listing.farm.county }} County{% if listing.farm.asp_vendor_id %} · ASP Vendor {{ listing.farm.asp_vendor_id }}{% endif %}</span>
-    <span>{{ listing.quantity_available }} {{ listing.quantity_unit }} available · ${{ listing.price_per_unit }}/{{ listing.quantity_unit }}
+    <span>{{ listing.quantity_available }} {{ listing.quantity_unit }} available · ${{ listing.price_per_unit|floatformat:2 }}/{{ listing.quantity_unit }}
       {% if harvest_ago_hours is not None %} · Harvested {{ harvest_ago_hours|floatformat:0 }} hrs ago{% endif %}
     </span>
     {% if ped_hours_remaining is not None and not ped_window_expired %}
@@ -109,7 +109,7 @@
         <span class="detail-label">LISTING</span>
         <div class="detail-row"><span>Crop</span><span>{{ listing.crop_name }}{% if listing.variety %} — {{ listing.variety }}{% endif %}</span></div>
         <div class="detail-row"><span>Quantity available</span><span>{{ listing.quantity_available }} {{ listing.quantity_unit }}</span></div>
-        <div class="detail-row"><span>Price</span><span>${{ listing.price_per_unit }} per {{ listing.quantity_unit }}</span></div>
+        <div class="detail-row"><span>Price</span><span>${{ listing.price_per_unit|floatformat:2 }} per {{ listing.quantity_unit }}</span></div>
         {% if listing.certifications %}
         <div class="detail-row"><span>Certifications</span><span>{{ listing.certifications|join:", " }}</span></div>
         {% endif %}
@@ -150,7 +150,7 @@
 </div>
 
 <script>
-  const pricePerUnit = {{ listing.price_per_unit }};
+  const pricePerUnit = Number("{{ listing.price_per_unit|floatformat:2 }}");
   const qtyInput = document.querySelector('input[name="quantity_requested"]');
   const est = document.getElementById('price-est');
   if (qtyInput && est) {

@@ -72,7 +72,7 @@
           <tr>
             <td><strong>{{ listing.crop_name }}</strong></td>
             <td>{{ listing.quantity_available }} {{ listing.quantity_unit }}</td>
-            <td class="text-green">${{ listing.price_per_unit }}/{{ listing.quantity_unit }}</td>
+            <td class="text-green">${{ listing.price_per_unit|floatformat:2 }}/{{ listing.quantity_unit }}</td>
             <td>{{ listing.availability_end|date:"M j" }}</td>
             <td>
               {% if listing.pending_count %}

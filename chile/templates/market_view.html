@@ -119,7 +119,7 @@
             <h3 class="card-title">{{ listing.crop_name }}{% if listing.variety %} — {{ listing.variety }}{% endif %}</h3>
             <p class="card-sub">{{ listing.farm.name }} · {{ listing.farm.county }}</p>
           </div>
-          <span class="card-price">${{ listing.price_per_unit }}/{{ listing.quantity_unit }}</span>
+          <span class="card-price">${{ listing.price_per_unit|floatformat:2 }}/{{ listing.quantity_unit }}</span>
         </div>
 
         <div class="card-meta">

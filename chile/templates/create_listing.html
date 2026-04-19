@@ -164,7 +164,7 @@
               <h3 class="card-title">{{ preview.crop_name }}{% if preview.variety %} — {{ preview.variety }}{% endif %}</h3>
               <p class="card-sub">{% if preview.farm %}{{ preview.farm.name }} · {{ preview.farm.county }} County{% endif %}</p>
             </div>
-            {% if preview.price %}<span class="card-price">${{ preview.price }}/{{ post.quantity_unit }}</span>{% endif %}
+            {% if preview.price %}<span class="card-price">${{ preview.price|floatformat:2 }}/{{ post.quantity_unit }}</span>{% endif %}
           </div>
           <div class="card-meta">
             {% if preview.qty %}<span>📦 {{ preview.qty }} {{ post.quantity_unit }} available</span>{% endif %}
