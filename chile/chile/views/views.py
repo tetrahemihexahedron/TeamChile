@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.utils import timezone
 
-from .models import Listing
+from chile.models import Listing
 
 
 def name_form(request):
