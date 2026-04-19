@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Impact &amp; Data — NM Food Connect{% endblock %}
+{% block title %}Impact &amp; Data — Harvest Base{% endblock %}
 
 {% block nav_links %}
 <div class="nav-links">
@@ -13,7 +13,7 @@
 
 {% block content %}
 <div class="page page-wide">
-  <h1>NM Food Connect — Impact &amp; Data</h1>
+  <h1>Harvest Base — Impact &amp; Data</h1>
   <p class="page-sub">Sources: NM Grown ASP FY2026 · USDA 2023 · NM Legislative Council 2020 Census · NM Voices for Children · NM PED</p>
 
   <div class="stats-row stats-row-8">
@@ -109,7 +109,7 @@
       <div class="alert-box alert-red">
         <h3>⚠ Counties with No Local Farms</h3>
         <p>These counties have active institutional buyers but ZERO ASP-approved local farms.</p>
-        <p class="text-green"><strong>NM Food Connect closes this gap.</strong></p>
+        <p class="text-green"><strong>Harvest Base closes this gap.</strong></p>
         {% for county in no_farm_counties %}
         <div class="no-farm-card">
           <strong>{{ county.county_name }} County</strong>
@@ -124,7 +124,7 @@
 
   <div class="landing-footer-quote">
     "22 of 33 New Mexico counties have institutional buyers ready to purchase but zero local ASP-approved farms."
-    <cite>— NM Food Connect Analysis · April 2026</cite>
+    <cite>— Harvest Base Analysis · April 2026</cite>
   </div>
 </div>
 {% endblock %}
