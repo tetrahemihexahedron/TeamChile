@@ -20,7 +20,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("", views.home, name="home"),
     path("list/", views.name_form, name="name_form"),
     path("test/", views.test, name="test_page"),
+    # Django site admin (managing users, etc.)
+    path("admin/", admin.site.urls),
 ]
