@@ -10,6 +10,20 @@ cd /app/chile
 
 python manage.py check
 python manage.py migrate --noinput
+
+# load the fixture if it hasn't already been loaded
+if python manage.py shell -c "
+from chile.models import Buyer
+import sys
+sys.exit(0 if Buyer.objects.exists() else 1)
+"
+then
+  echo 'Fixture already loaded'
+else
+  echo 'Loading fixture'
+  python manage.py loaddata fixtures/data.json
+fi
+
 # python manage.py collectstatic --noinput
 
 # create a superuser if one doesn't exist
