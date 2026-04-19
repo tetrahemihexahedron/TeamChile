@@ -6,11 +6,10 @@ from django.contrib.postgres.fields import ArrayField
 # Enums (USER-DEFINED types)
 
 class BuyerType(models.TextChoices):
-    # Fill in your actual enum values
     RESTAURANT = "Restaurant"
     SCHOOL = "School / District"
     GROCERY = "Grocery / Co-op"
-    BANK = "Bank"
+    BANK = "Food Bank"
     OTHER = "Other"
 
 class CropCategory(models.TextChoices):
